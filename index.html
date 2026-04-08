@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRock 추천 종목 | BlackRock Labs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #04060a;
+      --card-bg: rgba(15, 18, 29, 0.85);
+      --accent: #00b4ff;
+      --danger: #ff4d4d;
+      --border: rgba(255, 255, 255, 0.1);
+      --text-main: #f0f0f0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    /* --- 프리미엄 배경 --- */
+    .bg-system {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: url('background.jpg'); /* 기존 배경 이미지 활용 */
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.3) blur(10px);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      position: relative;
+    }
+
+    /* --- 상단 헤더 섹션 --- */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 0 10px;
+    }
+
+    .brand-logo {
+      height: 35px;
+      image-rendering: -webkit-optimize-contrast;
+    }
+
+    .header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    /* --- 추천 종목 메인 카드 --- */
+    .stock-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+
+    .section-group {
+      margin-bottom: 40px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    .section-label::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 10px;
+    }
+
+    /* --- 데이터 디스플레이 박스 --- */
+    .data-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 25px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .data-box:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--accent);
+    }
+
+    .stock-name {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .profit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .profit-item {
+      text-align: center;
+    }
+
+    .profit-label {
+      font-size: 14px;
+      color: var(--subtext);
+      margin-bottom: 10px;
+    }
+
+    .profit-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--danger); /* 목표 수익률 강조 */
+    }
+
+    .profit-value span {
+      font-size: 20px;
+      margin-left: 4px;
+    }
+
+    /* --- 하단 버튼 --- */
+    .btn-action {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 20px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s;
+    }
+
+    .btn-action:hover {
+      box-shadow: 0 0 30px rgba(0, 180, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 480px) {
+      .stock-card { padding: 30px 20px; }
+      .header-title { font-size: 20px; }
+      .stock-name { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-system"></div>
+
+<div class="container">
+  <div class="header">
+    <img src="logo.png" alt="BlackRock" class="brand-logo">
+    <div class="header-title">블랙록 추천 종목</div>
+  </div>
+
+  <div class="stock-card">
+    <div class="section-group">
+      <div class="section-label">추천 종목 명</div>
+      <div class="data-box">
+        <div class="stock-name" id="stockName">삼성전자 (005930)</div>
+      </div>
+    </div>
+
+    <div class="section-group" style="margin-bottom: 20px;">
+      <div class="section-label">기대 수익률</div>
+      <div class="profit-grid">
+        <div class="data-box profit-item">
+          <div class="profit-value" id="profitTarget">+42.5<span>%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-group">
+      <div class="section-label">분석 포인트</div>
+      <div class="data-box" style="font-size: 15px; color: #9eb1cd; line-height: 1.6;">
+        • 반도체 업황 회복에 따른 외국인 순매수 유입 강세<br>
+        • 차세대 HBM3 공급 계약 체결 가시화로 인한 밸류에이션 재평가<br>
+        • 주요 지지선 돌파 후 기술적 상승 랠리 구간 진입
+      </div>
+    </div>
+
+    <button class="btn-action" onclick="window.location.href='#'">상세 분석 리포트 확인하기</button>
+  </div>
+</div>
+
+</body>
+</html>
