@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlackRock 추천 종목</title>
+  <title>블랙록 추천 종목</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
     
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
       font-family: 'Noto Sans KR', sans-serif;
       color: white;
@@ -21,79 +21,95 @@
 
     .container {
       width: 100%;
-      max-width: 800px;
+      max-width: 820px;
       background: rgba(15, 23, 42, 0.95);
-      border-radius: 20px;
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.4);
     }
 
     .header {
       background: linear-gradient(90deg, #1e40af, #3b82f6);
-      padding: 25px 30px;
+      padding: 28px 35px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .blackrock-logo {
-      font-size: 42px;
+    .logo {
+      font-size: 46px;
       font-weight: 900;
       letter-spacing: -2px;
     }
 
-    .title {
-      font-size: 28px;
+    .main-title {
+      font-size: 29px;
       font-weight: 700;
     }
 
     .content {
-      padding: 30px;
+      padding: 35px;
     }
 
-    .section {
-      margin-bottom: 25px;
+    .box {
+      margin-bottom: 28px;
+      border-radius: 16px;
+      overflow: hidden;
     }
 
-    .section-title {
+    .box-title {
       background: #1e40af;
-      padding: 14px 20px;
-      font-size: 18px;
+      padding: 16px 24px;
+      font-size: 19px;
       font-weight: 700;
-      border-radius: 12px 12px 0 0;
       text-align: center;
     }
 
-    .section-content {
+    .box-content {
       background: #0f172a;
-      min-height: 120px;
-      border: 2px solid #1e40af;
+      min-height: 130px;
+      border: 3px solid #1e40af;
       border-top: none;
-      border-radius: 0 0 12px 12px;
-      padding: 20px;
-      font-size: 24px;
+      padding: 30px;
+      font-size: 32px;
       font-weight: 700;
       color: #60a5fa;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      line-height: 1.4;
+      line-height: 1.3;
     }
 
-    .big-section {
-      margin-top: 30px;
-    }
-
-    .big-section .section-content {
-      min-height: 320px;
-      font-size: 32px;
+    .big-box .box-content {
+      min-height: 280px;
+      font-size: 42px;
       color: #93c5fd;
     }
 
-    .footer-pattern {
-      height: 8px;
+    .download-btn {
+      margin: 30px auto;
+      display: block;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+      transition: all 0.3s;
+    }
+
+    .download-btn:hover {
+      background: #2563eb;
+      transform: translateY(-3px);
+    }
+
+    .footer-line {
+      height: 10px;
       background: linear-gradient(90deg, #3b82f6, #60a5fa);
     }
   </style>
@@ -102,29 +118,51 @@
   <div class="container">
     <!-- 헤더 -->
     <div class="header">
-      <div class="blackrock-logo">BlackRock®</div>
-      <div class="title">블랙록 추천 종목</div>
+      <div class="logo">BlackRock®</div>
+      <div class="main-title">블랙록 추천 종목</div>
     </div>
 
-    <!-- 추천 종목명 -->
     <div class="content">
-      <div class="section">
-        <div class="section-title">추천 종목 명</div>
-        <div class="section-content" id="stock-name">
-          <!-- 여기에 종목명 입력 -->
+      <!-- 추천 종목명 -->
+      <div class="box">
+        <div class="box-title">추천 종목 명</div>
+        <div class="box-content" id="stockName" contenteditable="true">
+          종목명을 여기에 입력하세요
         </div>
       </div>
 
       <!-- 수익률 -->
-      <div class="section big-section">
-        <div class="section-title">수익률</div>
-        <div class="section-content" id="return-rate">
-          <!-- 여기에 수익률 입력 (예: +128.4%) -->
+      <div class="box big-box">
+        <div class="box-title">수익률</div>
+        <div class="box-content" id="returnRate" contenteditable="true">
+          +000.0%
         </div>
       </div>
     </div>
 
-    <div class="footer-pattern"></div>
+    <!-- 다운로드 버튼 -->
+    <button class="download-btn" onclick="downloadImage()">
+      📥 이미지로 다운로드 하기
+    </button>
+
+    <div class="footer-line"></div>
   </div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    function downloadImage() {
+      const container = document.querySelector('.container');
+      
+      html2canvas(container, {
+        scale: 2,           // 해상도 높게
+        backgroundColor: '#0f172a'
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = '블랙록_추천종목.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
 </body>
 </html>
