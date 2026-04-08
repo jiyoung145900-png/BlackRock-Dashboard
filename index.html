@@ -49,11 +49,11 @@
     }
 
     .content {
-      padding: 35px;
+      padding: 35px 40px;
     }
 
     .box {
-      margin-bottom: 28px;
+      margin-bottom: 30px;
       border-radius: 16px;
       overflow: hidden;
     }
@@ -68,44 +68,45 @@
 
     .box-content {
       background: #0f172a;
-      min-height: 130px;
+      min-height: 140px;
       border: 3px solid #1e40af;
       border-top: none;
-      padding: 30px;
-      font-size: 32px;
+      padding: 25px;
+      font-size: 34px;
       font-weight: 700;
       color: #60a5fa;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      line-height: 1.3;
+      line-height: 1.4;
+      cursor: text;
+      outline: none;
     }
 
     .big-box .box-content {
-      min-height: 280px;
-      font-size: 42px;
+      min-height: 300px;
+      font-size: 48px;
       color: #93c5fd;
     }
 
     .download-btn {
-      margin: 30px auto;
+      margin: 20px auto 30px;
       display: block;
       background: #3b82f6;
       color: white;
       border: none;
-      padding: 16px 40px;
-      font-size: 18px;
+      padding: 18px 50px;
+      font-size: 19px;
       font-weight: 700;
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
-      transition: all 0.3s;
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
     }
 
     .download-btn:hover {
       background: #2563eb;
-      transform: translateY(-3px);
+      transform: translateY(-4px);
     }
 
     .footer-line {
@@ -142,7 +143,7 @@
 
     <!-- 다운로드 버튼 -->
     <button class="download-btn" onclick="downloadImage()">
-      📥 이미지로 다운로드 하기
+      📥 이미지로 저장하기
     </button>
 
     <div class="footer-line"></div>
@@ -154,7 +155,7 @@
       const container = document.querySelector('.container');
       
       html2canvas(container, {
-        scale: 2,           // 해상도 높게
+        scale: 2.5,           // 고해상도
         backgroundColor: '#0f172a'
       }).then(canvas => {
         const link = document.createElement('a');
