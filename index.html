@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>블랙록 추천 종목</title>
+  <title>블랙록 추천 종목 생성기</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
     
@@ -13,6 +13,7 @@
       background: linear-gradient(135deg, #0c0f1a 0%, #1c2538 100%);
       font-family: 'Noto Sans KR', sans-serif;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
@@ -87,17 +88,16 @@
       position: relative;
     }
 
-    .box-content::before {
+    /* Placeholder logic */
+    .box-content:empty::before {
       content: attr(data-placeholder);
-      position: absolute;
-      color: rgba(251, 191, 36, 0.25);
+      color: rgba(251, 191, 36, 0.2);
       font-size: 34px;
       pointer-events: none;
-      display: none;
     }
-
-    .box-content:empty::before {
-      display: block;
+    
+    .box-content:focus::before {
+      display: none;
     }
 
     .big-box .box-content {
@@ -106,13 +106,8 @@
       color: #fde047;
     }
 
-    .big-box .box-content::before {
-      font-size: 46px;
-    }
-
     .download-btn {
-      margin: 30px auto 35px;
-      display: block;
+      margin-top: 40px;
       background: linear-gradient(90deg, #f59e0b, #fbbf24);
       color: #1e2937;
       border: none;
@@ -122,11 +117,16 @@
       border-radius: 50px;
       cursor: pointer;
       box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
+      transition: all 0.2s;
     }
 
     .download-btn:hover {
       transform: translateY(-4px);
       box-shadow: 0 15px 45px rgba(245, 158, 11, 0.6);
+    }
+    
+    .download-btn:active {
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -151,21 +151,59 @@
     </div>
   </div>
 
-  <button class="download-btn" onclick="downloadImage()">
+  <button class="download-btn" id="saveBtn">
     📥 이미지로 저장하기
   </button>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
-    function downloadImage() {
-      const area = document.getElementById('capture-area');
-      html2canvas(area, { scale: 2.8, backgroundColor: '#0a0f1f' }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = '블랙록_추천종목.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    // 1. 엔터 입력 방지 로직
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault(); // 줄바꿈 방지
+          el.blur(); // 입력 완료 시 포커스 해제 (선택사항)
+        }
       });
+    });
+
+    // 2. 이미지 다운로드 함수 (최적화 버전)
+    async function downloadImage() {
+      const btn = document.getElementById('saveBtn');
+      const area = document.getElementById('capture-area');
+      
+      btn.innerText = "⏳ 처리 중...";
+      btn.style.opacity = "0.7";
+
+      try {
+        // 폰트가 완전히 로드될 때까지 대기 (폰트 깨짐 방지 핵심)
+        await document.fonts.ready;
+
+        // 약간의 지연 시간을 주어 브라우저 렌더링 확정
+        setTimeout(() => {
+          html2canvas(area, {
+            scale: 3, // 고해상도 유지
+            useCORS: true, // 외부 리소스 허용
+            backgroundColor: '#0a0f1f',
+            logging: false
+          }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `BlackRock_추천_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            btn.innerText = "📥 이미지로 저장하기";
+            btn.style.opacity = "1";
+          });
+        }, 100);
+      } catch (err) {
+        console.error("이미지 생성 실패:", err);
+        alert("이미지 생성 중 오류가 발생했습니다.");
+        btn.innerText = "📥 이미지로 저장하기";
+      }
     }
+
+    document.getElementById('saveBtn').addEventListener('click', downloadImage);
   </script>
 </body>
 </html>
