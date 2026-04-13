@@ -3,111 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackRock Tech Report</title>
+    <title>BlackRock High-End Report</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@700&display=swap');
 
         :root {
-            --metal-bg: #cbd5e1;
+            --metal-bg: #b0bfc9;
             --br-blue: #1e3a5a;
-            --glass-white: rgba(255, 255, 255, 0.4);
-            --blur-text: blur(4px); /* 흐릿한 효과 강도 */
+            --glass-blue: rgba(173, 216, 230, 0.3);
+            --placeholder-color: rgba(0, 0, 0, 0.3);
         }
 
         body {
             background-color: #f1f5f9;
             font-family: 'Noto Sans KR', sans-serif;
-            display: flex; flex-direction: column; align-items: center; padding: 40px 0;
-            margin: 0;
+            display: flex; flex-direction: column; align-items: center; padding: 40px 0; margin: 0;
         }
 
-        /* 메인 리포트 카드: 금속 회로 무늬 배경 */
+        /* 메인 카드: 금속 회로 느낌 배경 */
         .report-card {
             width: 550px;
             background: var(--metal-bg);
             background-image: 
-                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px),
-                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
+                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px),
+                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
             border-radius: 20px;
-            padding: 3px;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.2);
+            padding: 4px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.25);
             position: relative;
-            overflow: hidden;
             border: 1px solid #94a3b8;
         }
 
         /* 헤더 디자인 */
         .header {
-            background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
             padding: 25px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 4px solid var(--br-blue);
+            border-bottom: 5px solid var(--br-blue);
+            border-radius: 16px 16px 0 0;
         }
 
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 900; color: #000; letter-spacing: -1px; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 38px; font-weight: 900; color: #000; letter-spacing: -1.5px; }
         .title-area { text-align: right; }
-        .main-title { background: var(--br-blue); color: white; padding: 5px 15px; font-size: 18px; font-weight: 700; border-radius: 4px; }
-        .date-text { font-size: 15px; color: #334155; margin-top: 5px; font-weight: 900; }
+        .main-title { background: var(--br-blue); color: white; padding: 6px 18px; font-size: 19px; font-weight: 700; border-radius: 4px; }
+        .date-text { font-size: 16px; color: #334155; margin-top: 6px; font-weight: 900; }
 
-        .content { padding: 30px; position: relative; }
+        .content { padding: 30px; }
 
         /* 유리 질감 박스 */
         .glass-box {
-            background: var(--glass-white);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 15px;
+            background: var(--glass-blue);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
             margin-bottom: 25px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), inset 0 0 20px rgba(255,255,255,0.2);
             overflow: hidden;
         }
 
         .box-label {
-            background: rgba(30, 58, 90, 0.8);
-            color: white; text-align: center; padding: 8px; font-size: 14px; font-weight: 700;
+            background: rgba(30, 58, 90, 0.85);
+            color: white; text-align: center; padding: 10px; font-size: 15px; font-weight: 700;
         }
 
-        /* 텍스트 흐릿하게 처리 (수정 시 선명해짐) */
-        .blur-target {
-            padding: 20px; text-align: center; font-size: 32px; font-weight: 900;
-            color: #000; outline: none; transition: filter 0.3s;
-            filter: var(--blur-text);
+        /* 입력 영역 및 플레이스홀더 */
+        .editable {
+            padding: 25px; text-align: center; font-size: 36px; font-weight: 900;
+            color: #000; outline: none; position: relative;
         }
-        .blur-target:focus { filter: none; }
+        .editable:empty:before {
+            content: attr(data-placeholder);
+            color: var(--placeholder-color);
+            font-weight: 400;
+        }
 
-        /* 수익률 전용 다크 박스 */
+        /* 수익률 다크 박스 */
         .profit-card {
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 12px; margin: 15px; padding: 25px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
-            text-align: center; filter: var(--blur-text); transition: filter 0.3s;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 14px; margin: 15px; padding: 30px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+            text-align: center;
         }
-        .profit-card:focus-within { filter: none; }
-        .buy-text { color: white; font-size: 20px; font-weight: 700; margin-bottom: 8px; outline: none; }
-        .sell-text { color: #38bdf8; font-size: 18px; font-weight: 700; outline: none; }
+        .profit-input { font-size: 24px; font-weight: 700; color: white; outline: none; margin-bottom: 10px; }
+        .profit-input.accent { color: #38bdf8; font-size: 22px; }
+        .profit-input:empty:before { content: attr(data-placeholder); color: rgba(255,255,255,0.3); }
 
-        /* 리스트 영역: 계단현상 방지 및 정렬 */
+        /* 리스트 영역: 정렬 및 엔터 기능 */
         .analysis-list {
-            padding: 0 10px; color: #1e293b; font-size: 15px; line-height: 1.8;
-            outline: none; filter: var(--blur-text);
+            padding: 5px 10px; color: #1a202c; font-size: 16px; line-height: 1.8;
+            outline: none;
         }
-        .analysis-list:focus { filter: none; }
         .analysis-list ul { margin: 0; padding: 0; list-style: none; }
         .analysis-list li {
-            position: relative; padding-left: 25px; margin-bottom: 12px;
-            text-align: left;
+            position: relative; padding-left: 28px; margin-bottom: 12px;
+            text-align: left; font-weight: 500;
         }
         .analysis-list li::before {
-            content: '●'; position: absolute; left: 0; color: var(--br-blue); font-size: 10px;
+            content: '●'; position: absolute; left: 0; color: #000; font-size: 10px; top: 1px;
         }
 
         .save-btn {
-            margin-top: 30px; background: var(--br-blue); color: white;
-            border: none; padding: 15px 40px; font-size: 17px; font-weight: 700;
-            border-radius: 50px; cursor: pointer; transition: 0.3s;
+            margin-top: 40px; background: var(--br-blue); color: white;
+            border: none; padding: 18px 50px; font-size: 18px; font-weight: 700;
+            border-radius: 60px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
-        .save-btn:hover { background: #112a45; transform: scale(1.05); }
+        .save-btn:hover { transform: translateY(-3px); background: #112a45; }
     </style>
 </head>
 <body>
@@ -124,14 +126,14 @@
         <div class="content">
             <div class="glass-box">
                 <div class="box-label">추천 종목 명</div>
-                <div class="blur-target" contenteditable="true">HMM 011200</div>
+                <div class="editable" contenteditable="true" data-placeholder="HMM 011200"></div>
             </div>
 
             <div class="glass-box">
                 <div class="box-label">수익률</div>
                 <div class="profit-card">
-                    <div class="buy-text" contenteditable="true">매수 권장 : 21,270원 이하</div>
-                    <div class="sell-text" contenteditable="true">매도 권장 : 매니저 사인 대기</div>
+                    <div class="profit-input" contenteditable="true" data-placeholder="매수 권장 : 21,270원 이하"></div>
+                    <div class="profit-input accent" contenteditable="true" data-placeholder="매도 권장 : 매니저 사인 대기"></div>
                 </div>
             </div>
 
@@ -139,7 +141,7 @@
                 <ul contenteditable="true">
                     <li>중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면 수혜</li>
                     <li>해운 업황 둔화 속에서도 두 자릿수 영업이익 유지</li>
-                    <li>여기에 새로운 내용을 입력하세요 (엔터 치면 자동 정렬)</li>
+                    <li>여기에 새로운 내용을 입력하세요 (엔터 시 자동 정렬)</li>
                 </ul>
             </div>
         </div>
@@ -149,20 +151,21 @@
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
-        // 날짜 설정
+        // 날짜 자동 설정
         const d = new Date();
         document.getElementById('todayDate').innerText = `${d.getMonth() + 1}월 ${d.getDate()}일`;
 
+        // 이미지 저장 함수 (고화질)
         async function saveImage() {
             const btn = document.querySelector('.save-btn');
-            btn.innerText = "⏳ 처리 중...";
+            btn.innerText = "⏳ 생성 중...";
             const canvas = await html2canvas(document.getElementById('reportArea'), {
                 scale: 3,
                 useCORS: true,
                 backgroundColor: "#f1f5f9"
             });
             const link = document.createElement('a');
-            link.download = `BlackRock_Tech_Report_${Date.now()}.png`;
+            link.download = `BlackRock_Report_${Date.now()}.png`;
             link.href = canvas.toDataURL();
             link.click();
             btn.innerText = "📥 고해상도 리포트 저장";
