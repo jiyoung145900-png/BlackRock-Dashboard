@@ -1,165 +1,196 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlackRock 3D Report Generator</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackRock Premium Report Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@700;900&display=swap');
 
-    :root {
-      --main-bg: #e2e8f0;
-      --header-bg: #1e293b;
-      --box-accent: #2563eb;
-      --inner-dark: #0f172a;
-      --neon-blue: #38bdf8;
-    }
+        :root {
+            --metal-gradient: linear-gradient(145deg, #2d3748, #0f172a);
+            --gold-neon: #fcd34d;
+            --blue-neon: #38bdf8;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
 
-    body {
-      background: var(--main-bg);
-      font-family: 'Noto Sans KR', sans-serif;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh; margin: 0; padding: 20px;
-    }
+        body {
+            background: #0f172a;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; margin: 0; padding: 20px; color: #fff;
+        }
 
-    /* 3D 카드 컨테이너 */
-    .report-card {
-      width: 550px;
-      background: #ffffff;
-      border-radius: 15px;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.2), inset 0 0 10px rgba(0,0,0,0.05);
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
-    }
+        /* 메인 리포트 카드 */
+        .report-card {
+            width: 600px;
+            background: #1a202c;
+            border-radius: 20px;
+            position: relative;
+            padding: 2px; /* 보더 효과용 */
+            background: linear-gradient(145deg, #4a5568, #000000);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
 
-    /* 헤더: 입체적인 다크 블루 */
-    .header {
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      padding: 30px;
-      color: white;
-      display: flex; justify-content: space-between; align-items: flex-end;
-      border-bottom: 4px solid var(--box-accent);
-    }
+        .inner-content {
+            background: radial-gradient(circle at top right, #2d3748, #0f172a);
+            border-radius: 18px;
+            padding: 40px;
+        }
 
-    .brand-area .logo { font-size: 32px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 5px; }
-    .brand-area .sub-title { font-size: 18px; color: #94a3b8; font-weight: 700; }
-    .date-display { font-size: 16px; font-weight: 700; color: #38bdf8; }
+        /* 헤더 디자인 */
+        .header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+            padding-bottom: 20px; margin-bottom: 40px;
+        }
 
-    .content { padding: 35px; background: #f1f5f9; }
+        .logo-group .main-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 38px; font-weight: 900; color: #fff;
+            letter-spacing: -2px; margin-bottom: 5px;
+        }
 
-    /* 3D 박스 공통 스타일 */
-    .glass-box {
-      background: #ffffff;
-      border-radius: 12px;
-      margin-bottom: 30px;
-      box-shadow: 8px 8px 16px #d1d5db, -4px -4px 12px #ffffff; /* 뉴모피즘 입체감 */
-      overflow: hidden;
-    }
+        .logo-group .sub-logo {
+            font-size: 18px; color: var(--blue-neon); font-weight: 700; letter-spacing: 2px;
+        }
 
-    .box-label {
-      background: var(--header-bg); color: #fff;
-      text-align: center; padding: 12px; font-weight: 700; font-size: 16px;
-    }
+        .date-box { text-align: right; color: #94a3b8; font-weight: 700; }
 
-    /* 종목명 영역 */
-    .stock-input {
-      padding: 25px; text-align: center; font-size: 36px; font-weight: 900;
-      color: #1e293b; outline: none; cursor: text;
-    }
+        /* 3D 유리 박스 공통 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
 
-    /* 수익률 영역: 깊이감 있는 블랙홀 효과 */
-    .profit-box {
-      background: #0f172a; margin: 20px; border-radius: 10px; padding: 25px;
-      text-align: center; box-shadow: inset 0 4px 12px rgba(0,0,0,0.5);
-      border: 1px solid #334155;
-    }
-    
-    .buy-call { color: #f8fafc; font-size: 22px; font-weight: 700; margin-bottom: 12px; outline: none; }
-    .sell-call { color: var(--neon-blue); font-size: 20px; font-weight: 700; outline: none; text-shadow: 0 0 10px rgba(56,189,248,0.5); }
+        .panel-label {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--blue-neon);
+            text-align: center; padding: 10px;
+            font-size: 14px; font-weight: 700; border-radius: 15px 15px 0 0;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
 
-    /* 리스트 영역 */
-    .analysis-list {
-      padding: 10px; list-style: none; color: #334155; font-size: 15.5px; line-height: 1.8;
-    }
-    .analysis-list li {
-      margin-bottom: 15px; padding-left: 25px; position: relative; outline: none;
-    }
-    .analysis-list li::before {
-      content: '◆'; color: var(--box-accent); position: absolute; left: 0; font-size: 12px; top: 1px;
-    }
+        /* 종목명 강조 */
+        .stock-display {
+            padding: 30px; text-align: center;
+            font-size: 42px; font-weight: 900; color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+            outline: none;
+        }
 
-    /* 버튼 스타일 */
-    .controls { margin-top: 30px; display: flex; gap: 15px; }
-    .btn {
-      padding: 15px 35px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer;
-      transition: all 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .btn-save { background: var(--header-bg); color: white; }
-    .btn-save:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        /* 수익률 블랙홀 박스 */
+        .profit-zone {
+            background: #000; margin: 20px; border-radius: 12px; padding: 30px;
+            box-shadow: inset 0 0 30px rgba(56, 189, 248, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
 
-    [contenteditable="true"]:hover { background: rgba(56,189,248,0.05); border-radius: 4px; }
-  </style>
+        .buy-text { color: #fff; font-size: 24px; font-weight: 700; margin-bottom: 10px; outline: none; }
+        .sell-text { color: var(--blue-neon); font-size: 22px; font-weight: 700; outline: none; }
+
+        /* 리스트 스타일 */
+        .analysis-list {
+            list-style: none; padding: 0 10px;
+        }
+
+        .analysis-list li {
+            position: relative; padding-left: 30px; margin-bottom: 20px;
+            font-size: 16px; line-height: 1.6; color: #cbd5e1; outline: none;
+        }
+
+        .analysis-list li::before {
+            content: ''; position: absolute; left: 0; top: 8px;
+            width: 12px; height: 12px; background: var(--blue-neon);
+            box-shadow: 0 0 10px var(--blue-neon); border-radius: 2px;
+        }
+
+        /* 하단 버튼 */
+        .btn-container { margin-top: 40px; }
+        .save-btn {
+            background: linear-gradient(135deg, #38bdf8, #2563eb);
+            color: white; border: none; padding: 18px 50px;
+            font-size: 18px; font-weight: 700; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+            transition: 0.3s;
+        }
+        .save-btn:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.6); }
+
+        [contenteditable="true"]:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="report-card" id="reportArea">
-    <div class="header">
-      <div class="brand-area">
-        <div class="logo">BlackRock.</div>
-        <div class="sub-title">PREMIUM INSIGHT</div>
-      </div>
-      <div class="date-display" id="currentDate">4월 13일</div>
-    </div>
+    <div class="report-card" id="captureArea">
+        <div class="inner-content">
+            <div class="header">
+                <div class="logo-group">
+                    <div class="main-logo">BlackRock</div>
+                    <div class="sub-logo">QUANTUM INSIGHT</div>
+                </div>
+                <div class="date-box">
+                    <div id="todayDate">APRIL 13</div>
+                </div>
+            </div>
 
-    <div class="content">
-      <div class="glass-box">
-        <div class="box-label">추천 종목 명</div>
-        <div class="stock-input" contenteditable="true">HMM 011200</div>
-      </div>
+            <div class="glass-panel">
+                <div class="panel-label">Target Asset Class</div>
+                <div class="stock-display" contenteditable="true">HMM 011200</div>
+            </div>
 
-      <div class="glass-box">
-        <div class="box-label">수익률 분석</div>
-        <div class="profit-box">
-          <div class="buy-call" contenteditable="true">매수 권장 : 21,270원 이하</div>
-          <div class="sell-call" contenteditable="true">매도 권장 : 매니저 사인 대기</div>
+            <div class="glass-panel">
+                <div class="panel-label">Trading Strategy</div>
+                <div class="profit-zone">
+                    <div class="buy-text" contenteditable="true">매수 권장 : 21,270원 이하</div>
+                    <div class="sell-text" contenteditable="true">매도 권장 : 매니저 사인 대기</div>
+                </div>
+            </div>
+
+            <ul class="analysis-list">
+                <li contenteditable="true">중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면에서 주가 단기 급등 사례</li>
+                <li contenteditable="true">해운 업황 둔화 속에서도 두 자릿수 영업이익 유지 · 수익성 방어력 업계 최고 수준</li>
+                <li contenteditable="true">AI + 지정학 + 업황 방어력 3가지가 동시에 붙은 해운 핵심 종목</li>
+            </ul>
         </div>
-      </div>
-
-      <ul class="analysis-list">
-        <li contenteditable="true">중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면에서 주가 단기 급등 사례</li>
-        <li contenteditable="true">해운 업황 둔화 속에서도 두 자릿수 영업이익 유지 · 수익성 방어력 업계 최고 수준</li>
-        <li contenteditable="true">AI + 지정학 + 업황 방어력 3가지가 동시에 붙은 해운 핵심 종목</li>
-      </ul>
     </div>
-  </div>
 
-  <div class="controls">
-    <button class="btn btn-save" onclick="saveImage()">📥 고해상도 이미지 저장</button>
-  </div>
+    <div class="btn-container">
+        <button class="save-btn" onclick="saveReport()">📥 고해상도 리포트 출력</button>
+    </div>
 
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-  <script>
-    // 날짜 자동 업데이트
-    const d = new Date();
-    document.getElementById('currentDate').innerText = `${d.getMonth() + 1}월 ${d.getDate()}일`;
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // 오늘 날짜 자동 설정
+        const d = new Date();
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        document.getElementById('todayDate').innerText = `${months[d.getMonth()]} ${d.getDate()}`;
 
-    // 이미지 저장 기능
-    async function saveImage() {
-      const btn = document.querySelector('.btn-save');
-      btn.innerText = "⏳ 처리 중...";
-      
-      const canvas = await html2canvas(document.getElementById('reportArea'), {
-        scale: 3,
-        backgroundColor: "#e2e8f0",
-        useCORS: true
-      });
-      
-      const link = document.createElement('a');
-      link.download = `BlackRock_Report_${Date.now()}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-      btn.innerText = "📥 고해상도 이미지 저장";
-    }
-  </script>
+        // 이미지 저장 함수
+        async function saveReport() {
+            const btn = document.querySelector('.save-btn');
+            btn.innerText = "⏳ 생성 중...";
+            
+            const canvas = await html2canvas(document.getElementById('captureArea'), {
+                scale: 3, // 초고해상도 (인쇄 가능 수준)
+                backgroundColor: "#0f172a",
+                useCORS: true
+            });
+            
+            const link = document.createElement('a');
+            link.download = `BlackRock_Premium_Report_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            btn.innerText = "📥 고해상도 리포트 출력";
+        }
+    </script>
 </body>
 </html>
