@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackRock Premium Report v2</title>
+    <title>BlackRock Official Report</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
 
         :root {
-            --br-blue: #1a365d;
+            --br-blue: #2c4e75;
             --br-accent: #00b4ff;
-            --card-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            --panel-bg: #f8fafc;
         }
 
         body {
-            background-color: #f1f5f9;
+            background-color: #d1dbe4;
             font-family: 'Noto Sans KR', sans-serif;
             display: flex; flex-direction: column; align-items: center; padding: 40px 0;
             margin: 0;
@@ -22,88 +22,87 @@
 
         /* 메인 리포트 카드 */
         .report-card {
-            width: 520px;
+            width: 500px;
             background: #ffffff;
-            border-radius: 28px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: var(--card-shadow);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            border: 1px solid #cbd5e0;
         }
 
-        /* 고급스러운 헤더 */
+        /* 상단 헤더 */
         .header {
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-            padding: 30px;
+            background: #d1dbe4;
+            padding: 20px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 5px solid var(--br-blue);
+            border-bottom: 4px solid var(--br-blue);
         }
 
-        .logo-area { font-size: 34px; font-weight: 900; color: #000; letter-spacing: -2px; }
-        
+        .logo-area { font-size: 32px; font-weight: 900; color: #000; letter-spacing: -1.5px; }
         .title-area { text-align: right; }
         .main-title { 
-            background: var(--br-blue); color: white; padding: 6px 16px; 
-            font-size: 19px; font-weight: 700; border-radius: 8px;
+            background: var(--br-blue); color: white; padding: 5px 15px; 
+            font-size: 18px; font-weight: 700; border-radius: 4px;
         }
-        .date-text { font-size: 16px; color: #475569; margin-top: 8px; font-weight: 900; }
+        .date-text { font-size: 15px; color: #4a5568; margin-top: 5px; font-weight: 900; }
 
-        .content { padding: 35px; background: #fff; }
+        .content { padding: 30px; }
 
-        /* 입체감 있는 박스 */
+        /* 정보 박스 스타일 */
         .info-box {
-            border: 1px solid #e2e8f0; border-radius: 20px;
-            margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            background: #fff; overflow: hidden;
+            border: 1px solid #cbd5e0; border-radius: 10px;
+            margin-bottom: 25px; background: #fff; overflow: hidden;
         }
 
         .box-header {
             background: var(--br-blue); color: white; text-align: center;
-            padding: 12px; font-size: 15px; font-weight: 700; letter-spacing: 1px;
+            padding: 10px; font-size: 15px; font-weight: 700;
         }
 
         .box-body {
-            padding: 25px; text-align: center; font-size: 38px;
-            font-weight: 900; color: #0f172a; outline: none;
+            padding: 20px; text-align: center; font-size: 34px;
+            font-weight: 900; color: #000; outline: none;
         }
 
-        /* 수익률: 다크 모드 입체 박스 */
+        /* 수익률 섹션 */
         .profit-card {
-            background: #1e293b; color: white; border-radius: 16px;
+            background: #334155; color: white; border-radius: 10px;
             padding: 25px; margin: 15px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
             text-align: center;
         }
 
-        .buy-call { font-size: 23px; font-weight: 700; margin-bottom: 12px; outline: none; }
-        .sell-call { font-size: 21px; font-weight: 700; color: var(--br-accent); outline: none; }
+        .buy-call { font-size: 22px; font-weight: 700; margin-bottom: 10px; outline: none; }
+        .sell-call { font-size: 20px; font-weight: 700; color: var(--br-accent); outline: none; }
 
-        /* 리스트 영역: 정렬 버그 수정 */
+        /* 리스트 영역 (계단 현상 방지 핵심) */
         .analysis-list {
-            padding: 5px 10px; color: #1e293b; font-size: 15.5px; line-height: 1.8;
-            outline: none; min-height: 100px;
+            padding: 0 20px; color: #1a202c; font-size: 15px; line-height: 1.8;
+            outline: none;
         }
         
-        /* 리스트 아이템 스타일 (자바스크립트가 생성) */
-        .analysis-list div {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 12px;
-            text-align: left; /* 왼쪽 정렬 강제 */
-            display: block; /* 계단 현상 방지 */
+        /* 표준 리스트 태그 활용으로 정렬 문제 해결 */
+        .analysis-list ul {
+            margin: 0; padding: 0; list-style-type: none;
         }
 
-        .analysis-list div::before {
+        .analysis-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .analysis-list li::before {
             content: '●'; position: absolute; left: 0; 
-            font-size: 10px; color: var(--br-blue); top: 1px;
+            font-size: 8px; color: #000; top: 1px;
         }
 
         .save-btn {
-            margin-top: 40px; background: var(--br-blue); color: white;
-            border: none; padding: 16px 45px; font-size: 18px; font-weight: 700;
-            border-radius: 50px; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 15px 30px rgba(26, 54, 93, 0.3);
+            margin-top: 30px; background: var(--br-blue); color: white;
+            border: none; padding: 15px 40px; font-size: 17px; font-weight: 700;
+            border-radius: 50px; cursor: pointer;
         }
-        .save-btn:hover { transform: translateY(-3px); background: #102a43; }
     </style>
 </head>
 <body>
@@ -131,59 +130,37 @@
                 </div>
             </div>
 
-            <div class="analysis-list" id="editableList" contenteditable="true">
-                <div>중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면 수혜</div>
-                <div>해운 업황 둔화 속에서도 두 자릿수 영업이익 유지</div>
+            <div class="analysis-list">
+                <ul contenteditable="true">
+                    <li>중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면 수혜</li>
+                    <li>해운 업황 둔화 속에서도 두 자릿수 영업이익 유지</li>
+                    <li>여기에 새로운 내용을 입력하세요 (엔터 치면 자동 정렬)</li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <button class="save-btn" onclick="saveImage()">📥 프리미엄 리포트 저장</button>
+    <button class="save-btn" onclick="saveImage()">📥 고해상도 리포트 저장</button>
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
-        // 날짜 세팅
+        // 날짜 설정
         const d = new Date();
         document.getElementById('todayDate').innerText = `${d.getMonth() + 1}월 ${d.getDate()}일`;
 
-        // 계단 현상 해결된 엔터 로직
-        const list = document.getElementById('editableList');
-        list.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const selection = window.getSelection();
-                const range = selection.getRangeAt(0);
-                
-                // 새로운 div 생성 (계단 현상 방지를 위해 일관된 태그 사용)
-                const newDiv = document.createElement('div');
-                newDiv.innerHTML = '새 항목을 입력하세요'; // 초기 텍스트
-                
-                // 현재 노드 다음에 삽입
-                range.insertNode(newDiv);
-                
-                // 커서를 새 div로 이동
-                range.setStart(newDiv, 0);
-                range.setEnd(newDiv, 1);
-                range.collapse(false);
-                
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        });
-
         async function saveImage() {
             const btn = document.querySelector('.save-btn');
-            btn.innerText = "⏳ 고해상도 변환 중...";
+            btn.innerText = "⏳ 저장 중...";
             const canvas = await html2canvas(document.getElementById('reportArea'), {
                 scale: 3,
                 useCORS: true,
-                backgroundColor: "#f1f5f9"
+                backgroundColor: "#d1dbe4"
             });
             const link = document.createElement('a');
-            link.download = `BlackRock_Report_${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.download = `Report_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
             link.click();
-            btn.innerText = "📥 프리미엄 리포트 저장";
+            btn.innerText = "📥 고해상도 리포트 저장";
         }
     </script>
 </body>
