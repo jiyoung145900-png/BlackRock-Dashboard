@@ -3,34 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackRock Official Premium Report</title>
+    <title>BlackRock Premium Report Generator</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
 
         :root {
             --br-blue: #2c4e75; /* 원본의 딥 블루 */
             --br-accent: #00b4ff; /* 매도 권장 포인트 컬러 */
             --bg-metal: #d1dbe4; /* 메탈릭 그레이 */
+            --placeholder-color: rgba(0, 0, 0, 0.2); /* 흐릿한 플레이스홀더 색상 */
         }
 
         body {
-            background-color: #f0f2f5;
+            background-color: #f1f5f9;
             font-family: 'Noto Sans KR', sans-serif;
-            display: flex; flex-direction: column; align-items: center; padding: 40px 0; margin: 0;
+            display: flex; flex-direction: column; align-items: center; padding: 50px 0; margin: 0;
+            color: #1a202c;
         }
 
-        /* 메인 카드: 전체적인 3D 입체감 */
+        /* 메인 카드: 전체적인 3D 입체감 강화 */
         .report-card {
             width: 520px;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.2);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.1);
             border: 1px solid #cbd5e0;
             position: relative;
         }
 
-        /* 상단 헤더: 사선 무늬 디테일 재현 */
+        /* 상단 헤더: 원본 사선 무늬 디테일 완벽 재현 */
         .header {
             background: var(--bg-metal);
             height: 110px;
@@ -58,72 +60,89 @@
         .main-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
         .date-text { font-size: 15px; color: rgba(255,255,255,0.8); margin-top: 5px; font-weight: 900; }
 
-        .content { padding: 30px; background: #fff; }
+        .content { padding: 35px; background: #fff; }
 
         /* 정보 박스 스타일 */
         .info-box {
-            border: 1px solid #cbd5e0; border-radius: 10px;
-            margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid #cbd5e0; border-radius: 12px;
+            margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
             overflow: hidden;
         }
 
         .box-header {
             background: var(--br-blue); color: white; text-align: center;
-            padding: 10px; font-size: 15px; font-weight: 700;
+            padding: 12px; font-size: 16px; font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
-        /* 입력 영역 및 플레이스홀더 (흐릿한 예시) */
+        /* 입력 영역 및 플레이스홀더 공통 스타일 */
         .editable {
-            padding: 20px; text-align: center; font-size: 34px; font-weight: 900;
+            padding: 25px; text-align: center; font-size: 36px; font-weight: 900;
             color: #000; outline: none; position: relative;
+            letter-spacing: -1px;
         }
         .editable:empty:before {
             content: attr(data-placeholder);
-            color: rgba(0,0,0,0.2); /* 흐릿한 예시 글자 */
+            color: var(--placeholder-color); /* 흐릿한 예시 글자 */
             font-weight: 400;
         }
 
         /* 수익률 다크 박스 */
         .profit-card {
-            background: #334155; color: white; border-radius: 10px;
-            padding: 25px; margin: 15px;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.4);
+            background: #334155; color: white; border-radius: 12px;
+            padding: 30px; margin: 20px;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
             text-align: center;
         }
 
-        .profit-row { display: flex; justify-content: center; gap: 8px; font-weight: 700; margin-bottom: 8px; }
-        .profit-input { outline: none; min-width: 50px; text-align: left; }
-        .profit-input:empty:before { content: attr(data-placeholder); color: rgba(255,255,255,0.25); }
+        .profit-row { display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 12px; }
+        .profit-label { font-size: 22px; color: #fff; }
+        .profit-input { 
+            outline: none; min-width: 50px; text-align: left;
+            font-size: 22px; font-weight: 700; color: #fff;
+            position: relative;
+        }
+        .profit-input:empty:before { content: attr(data-placeholder); color: rgba(255,255,255,0.3); }
         
-        .buy-row { font-size: 22px; color: white; }
-        .sell-row { font-size: 20px; color: var(--br-accent); }
+        /* 매도 권장용 파란색 포인트 */
+        .sell-row .profit-label, .sell-row .profit-input { color: var(--br-accent); font-size: 20px; }
+        .sell-row .profit-input:empty:before { color: rgba(56, 189, 248, 0.4); }
 
-        /* 리스트 영역: 엔터 시 자동 점 생성 & 정렬 */
+        /* 리스트 영역: 정렬 및 점 생성 로직 완벽 수정 */
         .analysis-list {
-            padding: 0 10px; color: #1a202c; font-size: 15.5px; line-height: 1.8;
-            outline: none;
+            padding: 0 10px; color: #1a202c; font-size: 16px; line-height: 1.8;
+            outline: none; position: relative;
         }
         .analysis-list ul { margin: 0; padding: 0; list-style: none; }
+        
+        /* 점과 글씨 높낮이 완벽 정렬 핵심 */
         .analysis-list li {
-            position: relative; padding-left: 25px; margin-bottom: 12px;
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 15px;
             text-align: left;
+            font-weight: 500; /* 가독성 좋은 두께 */
         }
         .analysis-list li::before {
             content: '●'; position: absolute; left: 0; 
-            font-size: 10px; color: #000; top: 1px;
+            font-size: 10px; color: #1a202c;
+            top: 2px; /* 소수점 단위 정렬 */
         }
+
         /* 리스트 플레이스홀더 */
         .analysis-list ul:empty:before {
             content: "● 분석 내용을 입력하세요 (엔터 시 다음 줄 자동 생성)";
-            color: rgba(0,0,0,0.2);
+            color: var(--placeholder-color);
+            position: absolute; left: 10px; font-weight: 400;
         }
 
         .save-btn {
-            margin-top: 30px; background: var(--br-blue); color: white;
-            border: none; padding: 16px 50px; font-size: 17px; font-weight: 700;
-            border-radius: 50px; cursor: pointer; transition: 0.3s;
+            margin-top: 40px; background: var(--br-blue); color: white;
+            border: none; padding: 18px 50px; font-size: 18px; font-weight: 700;
+            border-radius: 60px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(44, 78, 117, 0.3);
         }
-        .save-btn:hover { background: #1e3a5a; transform: translateY(-3px); }
+        .save-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(44, 78, 117, 0.4); background: #1e3a5a; }
     </style>
 </head>
 <body>
@@ -147,20 +166,21 @@
                 <div class="box-header">수익률</div>
                 <div class="profit-card">
                     <div class="profit-row buy-row">
-                        <span>매수 권장 :</span>
+                        <span class="profit-label">매수 권장 :</span>
                         <div class="profit-input" contenteditable="true" data-placeholder="21,270원 이하"></div>
                     </div>
                     <div class="profit-row sell-row">
-                        <span>매도 권장 :</span>
+                        <span class="profit-label">매도 권장 :</span>
                         <div class="profit-input" contenteditable="true" data-placeholder="매니저 사인 대기"></div>
                     </div>
                 </div>
             </div>
 
             <div class="analysis-list">
-                <ul contenteditable="true">
+                <ul contenteditable="true" id="editableList">
                     <li>중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면 수혜</li>
                     <li>해운 업황 둔화 속에서도 두 자릿수 영업이익 유지</li>
+                    <li>여기에 내용을 입력하세요 (엔터 시 다음 줄 자동 정렬)</li>
                 </ul>
             </div>
         </div>
@@ -170,17 +190,36 @@
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
-        // 날짜 설정
+        // 날짜 자동 설정
         const d = new Date();
         document.getElementById('todayDate').innerText = `${d.getMonth() + 1}월 ${d.getDate()}일`;
 
+        // 리스트 엔터 시 일직선 정렬 유지 로직 (버그 수정 완결)
+        const list = document.getElementById('editableList');
+        list.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const newLi = document.createElement('li');
+                newLi.innerHTML = '<br>'; // 빈 줄 생성
+                range.insertNode(newLi);
+                range.setStart(newLi, 0);
+                range.setEnd(newLi, 0);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+
+        // 고해상도 이미지 저장
         async function saveImage() {
             const btn = document.querySelector('.save-btn');
-            btn.innerText = "⏳ 이미지 변환 중...";
+            btn.innerText = "⏳ 생성 중...";
             const canvas = await html2canvas(document.getElementById('reportArea'), {
-                scale: 3,
+                scale: 3, // 초고해상도 (폰트 안 깨짐)
                 useCORS: true,
-                backgroundColor: "#f0f2f5"
+                backgroundColor: "#f1f5f9"
             });
             const link = document.createElement('a');
             link.download = `BlackRock_Report_${Date.now()}.png`;
