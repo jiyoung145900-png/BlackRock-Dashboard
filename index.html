@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>멤버십 카드 생성기</title>
+    <title>프리미엄 멤버십 카드 발급기</title>
     <!-- 구글 폰트 불러오기 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Noto+Sans+KR:wght@300;500;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <!-- 이미지 캡처를 위한 html2canvas 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         :root {
-            --bg-color: #f4f4f9;
-            --card-bg: #ff6b6b; /* 카드 배경색 (코랄 핑크) */
-            --gold: #d4af37;
+            --bg-color: #121212; /* 고급스러운 다크 배경 */
+            /* 로즈골드 실크 그라데이션 */
+            --card-gradient: linear-gradient(135deg, #f7a9a9 0%, #e65c5c 30%, #ff7e8e 50%, #e65c5c 70%, #f7a9a9 100%);
+            /* 샴페인 골드 메탈릭 텍스처 */
+            --gold-gradient: linear-gradient(to bottom right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            --gold-color: #d4af37;
         }
 
         body {
@@ -25,133 +28,209 @@
             padding: 40px 20px;
             display: flex;
             justify-content: center;
-            gap: 40px;
+            align-items: flex-start;
+            gap: 50px;
             flex-wrap: wrap;
+            min-height: 100vh;
         }
 
-        /* 컨트롤 패널 스타일 */
+        /* 컨트롤 패널 스타일 (입력 및 세부 조정) */
         .controls {
-            background: white;
+            background: #ffffff;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 350px;
+            max-width: 360px;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .controls h2 {
             margin-top: 0;
-            font-size: 20px;
-            color: #333;
-            border-bottom: 2px solid var(--card-bg);
-            padding-bottom: 10px;
+            font-size: 22px;
+            font-weight: 900;
+            color: #111;
+            border-bottom: 3px solid #e65c5c;
+            padding-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
+            margin-bottom: 5px;
         }
 
         .input-group label {
             font-size: 13px;
             font-weight: 700;
-            color: #555;
+            color: #444;
         }
 
         .input-group input[type="text"] {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
             font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s;
+            background-color: #fafafa;
+        }
+
+        .input-group input[type="text"]:focus {
+            border-color: #e65c5c;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(230, 92, 92, 0.1);
+            background-color: #fff;
         }
 
         .input-group input[type="file"] {
             font-size: 12px;
             padding: 5px 0;
+            color: #666;
+        }
+
+        /* 슬라이더 컨트롤 스타일 */
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slider-group input[type="range"] {
+            flex-grow: 1;
+            accent-color: #e65c5c;
+        }
+
+        .slider-value {
+            font-size: 12px;
+            color: #888;
+            min-width: 35px;
+            text-align: right;
+        }
+
+        .controls-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 10px 0;
         }
 
         button.download-btn {
-            background-color: var(--card-bg);
+            background: var(--card-gradient);
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 8px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 900;
             cursor: pointer;
-            transition: 0.2s;
-            margin-top: 10px;
+            transition: 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(230, 92, 92, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         button.download-btn:hover {
-            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(230, 92, 92, 0.4);
         }
 
         /* 카드 캔버스 래퍼 */
         .card-wrapper {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 15px;
+            position: sticky;
+            top: 40px;
         }
 
-        /* 실제 멤버십 카드 디자인 */
+        .save-notice {
+            color: #aaa;
+            font-size: 13px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 실제 멤버십 카드 디자인 (하이엔드 퀄리티 업그레이드) */
         .card {
             width: 800px;
             height: 450px;
-            background-color: var(--card-bg);
-            border: 2px solid white;
+            background: var(--card-gradient);
             position: relative;
             color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             overflow: hidden;
             box-sizing: border-box;
+            border-radius: 12px;
+        }
+
+        /* 카드 내부 테두리 (골드 라인) */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* 텍스트 요소 공통 */
-        .card p { margin: 0; }
+        .card p { margin: 0; z-index: 2; position: relative; }
 
         /* 좌측 상단 텍스트 */
         .top-left {
             position: absolute;
-            top: 40px;
-            left: 40px;
+            top: 45px;
+            left: 45px;
             font-style: italic;
             font-weight: 300;
-            font-size: 18px;
-            line-height: 1.5;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-size: 19px;
+            line-height: 1.6;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+            letter-spacing: 0.5px;
         }
 
         /* 우측 상단 텍스트 */
         .top-right {
             position: absolute;
-            top: 35px;
-            right: 40px;
+            top: 40px;
+            right: 45px;
             text-align: right;
+            z-index: 2;
         }
         .top-right .small-text {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 5px;
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .top-right .big-eng {
             font-family: 'Montserrat', sans-serif;
-            font-size: 38px;
-            font-weight: 800;
-            line-height: 0.9;
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
         }
         .top-right .cursive {
             font-family: 'Caveat', cursive;
-            font-size: 32px;
+            font-size: 36px;
             color: #0b2239; /* 다크 네이비 */
             margin-top: -15px;
-            margin-right: -10px;
+            margin-right: -5px;
             position: relative;
             z-index: 2;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.3);
         }
 
         /* 중앙 로고 영역 */
@@ -162,24 +241,27 @@
             transform: translate(-50%, -50%);
             text-align: center;
             width: 80%;
-            max-height: 100px;
+            max-height: 120px;
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 2;
         }
         
         .center-logo img {
-            max-height: 120px;
+            max-height: 140px;
             max-width: 100%;
             object-fit: contain;
-            display: none; /* 이미지가 없으면 숨김 */
+            display: none; 
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
         }
 
         .center-logo .default-text {
             font-family: 'Caveat', cursive;
-            font-size: 80px;
+            font-size: 90px;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            font-weight: 700;
         }
 
         /* 좌측 하단 프로필 영역 */
@@ -188,46 +270,69 @@
             bottom: 60px;
             left: 50px;
             text-align: center;
+            z-index: 2;
         }
         .crown {
-            font-size: 30px;
+            font-size: 34px;
             line-height: 1;
-            margin-bottom: -15px;
+            margin-bottom: -18px;
             position: relative;
-            z-index: 2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 3;
+            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.3));
         }
         .profile-img-box {
-            width: 120px;
-            height: 120px;
+            width: 125px;
+            height: 125px;
             border-radius: 50%;
-            border: 4px solid var(--gold);
-            background-color: #ddd;
+            background: var(--gold-gradient); /* 테두리에 그라데이션 적용 */
+            padding: 4px; /* 테두리 두께 */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
         }
-        .profile-img-box img {
+        
+        /* 사진 편집을 위한 내부 컨테이너 */
+        .profile-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .profile-inner img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* JS로 조정될 속성들 */
+            transform: scale(1) translate(0%, 0%);
+            transform-origin: center center;
+            transition: transform 0.1s ease-out;
         }
 
         /* 우측 하단 QR 영역 */
         .qr-area {
             position: absolute;
             bottom: 60px;
-            right: 40px;
+            right: 45px;
+            z-index: 2;
         }
         .qr-area img {
             width: 90px;
             height: 90px;
             background: white;
-            padding: 5px;
-            border-radius: 4px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 6px;
+            border-radius: 8px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            object-fit: contain;
         }
 
-        /* 하단 정보 텍스트 (코디, 회원ID, 웹사이트) */
+        /* 하단 정보 텍스트 */
         .footer-info {
             position: absolute;
             bottom: 25px;
@@ -235,27 +340,30 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 40px;
+            padding: 0 45px;
             box-sizing: border-box;
-            font-size: 18px;
-            font-weight: 500;
+            font-size: 19px;
+            font-weight: 700;
+            z-index: 2;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
         }
         .footer-info .left-info {
             display: flex;
-            gap: 30px;
+            gap: 35px;
         }
         .footer-info .website {
-            font-weight: 300;
+            font-weight: 400;
             font-size: 16px;
+            letter-spacing: 0.5px;
         }
 
     </style>
 </head>
 <body>
 
-    <!-- 컨트롤 패널 (입력 폼) -->
+    <!-- 컨트롤 패널 -->
     <div class="controls">
-        <h2>정보 입력란</h2>
+        <h2>프리미엄 정보 설정</h2>
         
         <div class="input-group">
             <label>담당 코디 번호</label>
@@ -267,10 +375,37 @@
             <input type="text" id="member-input" value="kimcg12345" placeholder="예: kimcg12345">
         </div>
 
+        <div class="controls-divider"></div>
+
         <div class="input-group">
-            <label>프로필 사진 업로드 (정방형 권장)</label>
+            <label>프로필 사진 업로드</label>
             <input type="file" id="profile-upload" accept="image/*">
         </div>
+
+        <!-- 사진 세부 조정 슬라이더 -->
+        <div class="input-group">
+            <label>사진 크기 확대/축소</label>
+            <div class="slider-group">
+                <input type="range" id="profile-scale" min="0.5" max="3" step="0.05" value="1">
+                <span class="slider-value" id="val-scale">1.00</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label>사진 상하(Y) 이동</label>
+            <div class="slider-group">
+                <input type="range" id="profile-y" min="-100" max="100" step="1" value="0">
+                <span class="slider-value" id="val-y">0</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label>사진 좌우(X) 이동</label>
+            <div class="slider-group">
+                <input type="range" id="profile-x" min="-100" max="100" step="1" value="0">
+                <span class="slider-value" id="val-x">0</span>
+            </div>
+        </div>
+
+        <div class="controls-divider"></div>
 
         <div class="input-group">
             <label>QR 코드 업로드</label>
@@ -278,50 +413,47 @@
         </div>
 
         <div class="input-group">
-            <label>중앙 로고 업로드 (선택, 배경투명 PNG 권장)</label>
+            <label>중앙 로고 업로드 (선택, 배경투명 PNG)</label>
             <input type="file" id="logo-upload" accept="image/*">
         </div>
 
-        <button class="download-btn" onclick="downloadCard()">카드 이미지로 저장하기</button>
+        <button class="download-btn" onclick="downloadCard()">최고 화질로 카드 저장하기</button>
     </div>
 
     <!-- 카드 미리보기 영역 -->
     <div class="card-wrapper">
+        <div class="save-notice">🟢 모든 입력 및 조정 상태는 실시간으로 자동 저장됩니다.</div>
         <div class="card" id="card-canvas">
             
-            <!-- 좌측 상단 -->
             <div class="top-left">
                 <p>설레이는 순간</p>
                 <p>&nbsp;&nbsp;&nbsp;&nbsp;최고의 경험을 선사해 드립니다</p>
             </div>
 
-            <!-- 우측 상단 -->
             <div class="top-right">
                 <p class="small-text">전국 1등! 소개팅 만남 커뮤니티</p>
                 <p class="big-eng">MEMBER</p>
                 <p class="big-eng">SHIP <span class="cursive">for you</span></p>
             </div>
 
-            <!-- 중앙 로고 / 텍스트 -->
             <div class="center-logo">
                 <p class="default-text" id="default-logo-text">banada love</p>
                 <img id="card-logo" src="" alt="custom-logo">
             </div>
 
-            <!-- 프로필 사진 -->
             <div class="profile-area">
                 <div class="crown">👑</div>
                 <div class="profile-img-box">
-                    <img id="card-profile" src="https://via.placeholder.com/150?text=Profile" alt="Profile">
+                    <div class="profile-inner">
+                        <img id="card-profile" src="https://via.placeholder.com/300?text=Profile" alt="Profile">
+                    </div>
                 </div>
             </div>
 
-            <!-- QR 코드 -->
             <div class="qr-area">
                 <img id="card-qr" src="https://via.placeholder.com/100?text=QR" alt="QR Code">
             </div>
 
-            <!-- 하단 텍스트 (코디, ID, 사이트 주소) -->
             <div class="footer-info">
                 <div class="left-info">
                     <p>담당 코디: <span id="val-coord">10005</span></p>
@@ -336,53 +468,149 @@
     </div>
 
     <script>
-        // 텍스트 실시간 반영
-        document.getElementById('coord-input').addEventListener('input', function(e) {
-            document.getElementById('val-coord').innerText = e.target.value;
-        });
+        // DOM 요소 캐싱
+        const coordInput = document.getElementById('coord-input');
+        const memberInput = document.getElementById('member-input');
+        const valCoord = document.getElementById('val-coord');
+        const valMember = document.getElementById('val-member');
+        
+        const scaleInput = document.getElementById('profile-scale');
+        const xInput = document.getElementById('profile-x');
+        const yInput = document.getElementById('profile-y');
+        const profileImg = document.getElementById('card-profile');
+        
+        const qrImg = document.getElementById('card-qr');
+        const logoImg = document.getElementById('card-logo');
+        const defaultLogoText = document.getElementById('default-logo-text');
 
-        document.getElementById('member-input').addEventListener('input', function(e) {
-            document.getElementById('val-member').innerText = e.target.value;
-        });
+        // 상태 저장을 위한 키값 정의
+        const STORAGE_KEY = 'banada_vip_card_data';
 
-        // 이미지 업로드 공통 함수
-        function handleImageUpload(inputId, targetId, isLogo = false) {
+        // 1. 텍스트 실시간 반영 및 저장
+        function updateText() {
+            valCoord.innerText = coordInput.value;
+            valMember.innerText = memberInput.value;
+            saveState();
+        }
+        coordInput.addEventListener('input', updateText);
+        memberInput.addEventListener('input', updateText);
+
+        // 2. 사진 위치/크기 조절 및 저장
+        function updateProfileTransform() {
+            const scale = scaleInput.value;
+            const x = xInput.value;
+            const y = yInput.value;
+            
+            // CSS Transform 적용 (비율 유지하며 이동)
+            profileImg.style.transform = `scale(${scale}) translate(${x}%, ${y}%)`;
+            
+            // 수치 텍스트 업데이트
+            document.getElementById('val-scale').innerText = parseFloat(scale).toFixed(2);
+            document.getElementById('val-x').innerText = x;
+            document.getElementById('val-y').innerText = y;
+            
+            saveState();
+        }
+        scaleInput.addEventListener('input', updateProfileTransform);
+        xInput.addEventListener('input', updateProfileTransform);
+        yInput.addEventListener('input', updateProfileTransform);
+
+        // 3. 이미지 업로드 처리 (로컬 스토리지에 Base64로 저장)
+        function handleImageUpload(inputId, targetImgEl, isLogo = false, storageImgKey) {
             const fileInput = document.getElementById(inputId);
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(event) {
-                        const imgElement = document.getElementById(targetId);
-                        imgElement.src = event.target.result;
+                        const base64Str = event.target.result;
+                        targetImgEl.src = base64Str;
                         
-                        // 중앙 로고의 경우, 이미지가 올라오면 기본 텍스트를 숨김 처리
                         if(isLogo) {
-                            imgElement.style.display = 'block';
-                            document.getElementById('default-logo-text').style.display = 'none';
+                            targetImgEl.style.display = 'block';
+                            defaultLogoText.style.display = 'none';
+                        }
+                        
+                        // 크기가 너무 큰 이미지는 저장 시 오류가 날 수 있으므로 try-catch 적용
+                        try {
+                            const data = getSavedState();
+                            data[storageImgKey] = base64Str;
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                        } catch (err) {
+                            console.warn("이미지 용량이 커서 브라우저 캐시에 저장되지 않았습니다. 새로고침 시 다시 업로드해야 합니다.");
                         }
                     }
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(file); // 이미지 Data URL(Base64)로 변환
                 }
             });
         }
+        handleImageUpload('profile-upload', profileImg, false, 'profileImgData');
+        handleImageUpload('qr-upload', qrImg, false, 'qrImgData');
+        handleImageUpload('logo-upload', logoImg, true, 'logoImgData');
 
-        // 각 이미지 업로드 이벤트 바인딩
-        handleImageUpload('profile-upload', 'card-profile');
-        handleImageUpload('qr-upload', 'card-qr');
-        handleImageUpload('logo-upload', 'card-logo', true);
 
-        // 카드 이미지 다운로드 기능 (html2canvas 사용)
+        // 4. 상태 저장 및 불러오기 로직 (Local Storage)
+        function getSavedState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        function saveState() {
+            const data = getSavedState();
+            data.coord = coordInput.value;
+            data.member = memberInput.value;
+            data.scale = scaleInput.value;
+            data.x = xInput.value;
+            data.y = yInput.value;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadState() {
+            const data = getSavedState();
+            
+            // 텍스트 불러오기
+            if(data.coord) {
+                coordInput.value = data.coord;
+                valCoord.innerText = data.coord;
+            }
+            if(data.member) {
+                memberInput.value = data.member;
+                valMember.innerText = data.member;
+            }
+            
+            // 슬라이더 값 불러오기
+            if(data.scale) scaleInput.value = data.scale;
+            if(data.x) xInput.value = data.x;
+            if(data.y) yInput.value = data.y;
+            updateProfileTransform(); // 트랜스폼 적용
+
+            // 이미지 데이터 불러오기
+            if(data.profileImgData) profileImg.src = data.profileImgData;
+            if(data.qrImgData) qrImg.src = data.qrImgData;
+            if(data.logoImgData) {
+                logoImg.src = data.logoImgData;
+                logoImg.style.display = 'block';
+                defaultLogoText.style.display = 'none';
+            }
+        }
+
+        // 초기 로드 시 실행
+        window.onload = loadState;
+
+
+        // 5. 고화질 카드 캡처 및 다운로드 기능
         function downloadCard() {
             const card = document.getElementById('card-canvas');
             
             html2canvas(card, {
-                scale: 2, // 고해상도 저장
-                backgroundColor: null
+                scale: 3, // 인쇄 및 공유용 고해상도 (3배율)
+                useCORS: true,
+                backgroundColor: null,
+                logging: false
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'membership_card.png';
-                link.href = canvas.toDataURL('image/png');
+                link.download = `VIP_CARD_${memberInput.value}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
             });
         }
