@@ -3,220 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackRock 3D Infographic Generator</title>
+    <title>멤버십 카드 생성기</title>
+    <!-- 구글 폰트 불러오기 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Noto+Sans+KR:wght@300;500;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <!-- 이미지 캡처를 위한 html2canvas 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
-
-        /* 원본 색상 및 3D 효과를 위한 변수 정의 */
         :root {
-            --bg-metal: #d1dbe4; /* 원본 배경 회색조 */
-            --br-blue: #2c4e75; /* 원본의 묵직한 블루 */
-            --br-accent: #00b4ff; /* 매도 권장 텍스트 색상 */
-            --card-shadow: 0 40px 100px rgba(0,0,0,0.18);
-            --inset-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+            --bg-color: #f4f4f9;
+            --card-bg: #ff6b6b; /* 카드 배경색 (코랄 핑크) */
+            --gold: #d4af37;
         }
 
         body {
-            background-color: #f0f2f5;
             font-family: 'Noto Sans KR', sans-serif;
-            display: flex; flex-direction: column; align-items: center; padding: 40px 0;
+            background-color: var(--bg-color);
             margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
         }
 
-        /* 1. 3D 리포트 메인 컨테이너 */
-        .report-card {
-            width: 500px;
-            background: #ffffff;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: var(--card-shadow);
-            border: 1px solid #cbd5e0;
-        }
-
-        /* 2. 3D 헤더 디자인 */
-        .header {
-            background: var(--bg-metal);
-            padding: 20px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 5px solid var(--br-blue);
-            box-shadow: inset 0 -2px 5px rgba(0,0,0,0.1);
-        }
-
-        .logo-area { font-size: 32px; font-weight: 900; color: #000; letter-spacing: -1.5px; }
-        .title-area { text-align: right; }
-        .main-title { 
-            background: var(--br-blue); color: white; padding: 5px 15px; 
-            font-size: 18px; font-weight: 700; border-radius: 4px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-        }
-        .date-text { font-size: 15px; color: #4a5568; margin-top: 5px; font-weight: 900; }
-
-        .content { padding: 30px; background: #fff; }
-
-        /* 3. 3D 정보 박스 디자인 */
-        .info-box {
-            border: 1px solid #cbd5e0;
+        /* 컨트롤 패널 스타일 */
+        .controls {
+            background: white;
+            padding: 30px;
             border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            overflow: hidden;
-            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .box-header {
-            background: linear-gradient(180deg, var(--br-blue) 0%, #1e3a5a 100%);
-            color: white; text-align: center;
-            padding: 10px; font-size: 15px; font-weight: 700;
+        .controls h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #333;
+            border-bottom: 2px solid var(--card-bg);
+            padding-bottom: 10px;
         }
 
-        .box-body {
-            padding: 20px; text-align: center;
-            font-size: 34px; font-weight: 900; color: #000;
-            outline: none; position: relative;
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        /* 4. 수익률 전용 3D 박스 */
-        .profit-card {
-            background: #334155; color: white; border-radius: 10px;
-            padding: 25px; margin: 15px;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.4);
-            border: 1px solid rgba(0,0,0,0.2);
-            text-align: center;
+        .input-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #555;
         }
 
-        .buy-call { font-size: 22px; font-weight: 700; margin-bottom: 10px; outline: none; }
-        .sell-call { font-size: 20px; font-weight: 700; color: var(--br-accent); outline: none; }
-
-        /* 5. 분석 리스트 디자인 (계단현상 완전 박멸 핵심) */
-        .analysis-section {
-            padding: 0 10px;
+        .input-group input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
         }
 
-        /* 표준 ul, li 구조를 사용하여 정렬 문제 해결 */
-        .analysis-list {
-            margin: 0; padding: 0;
-            list-style-type: none;
-            color: #1a202c; font-size: 14.5px; line-height: 1.8;
-            outline: none;
+        .input-group input[type="file"] {
+            font-size: 12px;
+            padding: 5px 0;
         }
 
-        .analysis-list li {
-            position: relative;
-            padding-left: 20px;
-            margin-bottom: 12px;
-            text-align: left;
-        }
-
-        .analysis-list li::before {
-            content: '●'; /* 불릿 모양 */
-            position: absolute;
-            left: 0;
-            top: 1px; /* 글씨 높낮이 세밀 조정 */
-            font-size: 8px;
-            color: #000;
-        }
-
-        /* 저장 버튼 스타일 */
-        .save-btn {
-            margin-top: 30px;
-            background: var(--br-blue);
+        button.download-btn {
+            background-color: var(--card-bg);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 12px;
+            border-radius: 6px;
             font-size: 16px;
-            font-weight: 700;
-            border-radius: 30px;
+            font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(44, 78, 117, 0.3);
-            transition: all 0.3s;
+            transition: 0.2s;
+            margin-top: 10px;
         }
-        .save-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(44, 78, 117, 0.4);
+
+        button.download-btn:hover {
+            background-color: #ff5252;
         }
+
+        /* 카드 캔버스 래퍼 */
+        .card-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 실제 멤버십 카드 디자인 */
+        .card {
+            width: 800px;
+            height: 450px;
+            background-color: var(--card-bg);
+            border: 2px solid white;
+            position: relative;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* 텍스트 요소 공통 */
+        .card p { margin: 0; }
+
+        /* 좌측 상단 텍스트 */
+        .top-left {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 1.5;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* 우측 상단 텍스트 */
+        .top-right {
+            position: absolute;
+            top: 35px;
+            right: 40px;
+            text-align: right;
+        }
+        .top-right .small-text {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .top-right .big-eng {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 0.9;
+        }
+        .top-right .cursive {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            color: #0b2239; /* 다크 네이비 */
+            margin-top: -15px;
+            margin-right: -10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 중앙 로고 영역 */
+        .center-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+            max-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .center-logo img {
+            max-height: 120px;
+            max-width: 100%;
+            object-fit: contain;
+            display: none; /* 이미지가 없으면 숨김 */
+        }
+
+        .center-logo .default-text {
+            font-family: 'Caveat', cursive;
+            font-size: 80px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 좌측 하단 프로필 영역 */
+        .profile-area {
+            position: absolute;
+            bottom: 60px;
+            left: 50px;
+            text-align: center;
+        }
+        .crown {
+            font-size: 30px;
+            line-height: 1;
+            margin-bottom: -15px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .profile-img-box {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            background-color: #ddd;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .profile-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 우측 하단 QR 영역 */
+        .qr-area {
+            position: absolute;
+            bottom: 60px;
+            right: 40px;
+        }
+        .qr-area img {
+            width: 90px;
+            height: 90px;
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 하단 정보 텍스트 (코디, 회원ID, 웹사이트) */
+        .footer-info {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-sizing: border-box;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .footer-info .left-info {
+            display: flex;
+            gap: 30px;
+        }
+        .footer-info .website {
+            font-weight: 300;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="report-card" id="reportArea">
-        <div class="header">
-            <div class="logo-area">BlackRock.</div>
-            <div class="title-area">
-                <div class="main-title">블랙록 추천 종목</div>
-                <div class="date-text" id="todayDate"></div>
-            </div>
+    <!-- 컨트롤 패널 (입력 폼) -->
+    <div class="controls">
+        <h2>정보 입력란</h2>
+        
+        <div class="input-group">
+            <label>담당 코디 번호</label>
+            <input type="text" id="coord-input" value="10005" placeholder="예: 10005">
         </div>
 
-        <div class="content">
-            <div class="info-box">
-                <div class="box-header">추천 종목 명</div>
-                <div class="box-body" contenteditable="true">
-                    HMM 011200
+        <div class="input-group">
+            <label>회원 ID</label>
+            <input type="text" id="member-input" value="kimcg12345" placeholder="예: kimcg12345">
+        </div>
+
+        <div class="input-group">
+            <label>프로필 사진 업로드 (정방형 권장)</label>
+            <input type="file" id="profile-upload" accept="image/*">
+        </div>
+
+        <div class="input-group">
+            <label>QR 코드 업로드</label>
+            <input type="file" id="qr-upload" accept="image/*">
+        </div>
+
+        <div class="input-group">
+            <label>중앙 로고 업로드 (선택, 배경투명 PNG 권장)</label>
+            <input type="file" id="logo-upload" accept="image/*">
+        </div>
+
+        <button class="download-btn" onclick="downloadCard()">카드 이미지로 저장하기</button>
+    </div>
+
+    <!-- 카드 미리보기 영역 -->
+    <div class="card-wrapper">
+        <div class="card" id="card-canvas">
+            
+            <!-- 좌측 상단 -->
+            <div class="top-left">
+                <p>설레이는 순간</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;최고의 경험을 선사해 드립니다</p>
+            </div>
+
+            <!-- 우측 상단 -->
+            <div class="top-right">
+                <p class="small-text">전국 1등! 소개팅 만남 커뮤니티</p>
+                <p class="big-eng">MEMBER</p>
+                <p class="big-eng">SHIP <span class="cursive">for you</span></p>
+            </div>
+
+            <!-- 중앙 로고 / 텍스트 -->
+            <div class="center-logo">
+                <p class="default-text" id="default-logo-text">banada love</p>
+                <img id="card-logo" src="" alt="custom-logo">
+            </div>
+
+            <!-- 프로필 사진 -->
+            <div class="profile-area">
+                <div class="crown">👑</div>
+                <div class="profile-img-box">
+                    <img id="card-profile" src="https://via.placeholder.com/150?text=Profile" alt="Profile">
                 </div>
             </div>
 
-            <div class="info-box">
-                <div class="box-header">수익률</div>
-                <div class="profit-card">
-                    <div class="buy-call" contenteditable="true">매수 권장 : 21,270원 이하</div>
-                    <div class="sell-call" contenteditable="true">매도 권장 : 매니저 사인 대기</div>
+            <!-- QR 코드 -->
+            <div class="qr-area">
+                <img id="card-qr" src="https://via.placeholder.com/100?text=QR" alt="QR Code">
+            </div>
+
+            <!-- 하단 텍스트 (코디, ID, 사이트 주소) -->
+            <div class="footer-info">
+                <div class="left-info">
+                    <p>담당 코디: <span id="val-coord">10005</span></p>
+                    <p>회원 ID: <span id="val-member">kimcg12345</span></p>
+                </div>
+                <div class="website">
+                    <p>https://www.banadalove.com</p>
                 </div>
             </div>
 
-            <div class="analysis-section">
-                <ul class="analysis-list" contenteditable="true">
-                    <li>중동 리스크 확대 시 운임 상승 기대 → 실제 전쟁 국면 수혜</li>
-                    <li>해운 업황 둔화 속에서도 두 자릿수 영업이익 유지</li>
-                    <li>AI + 지정학 + 업황 방어력 3가지가 동시에 붙은 핵심 종목</li>
-                </ul>
-            </div>
         </div>
     </div>
 
-    <button class="save-btn" id="saveBtn">📥 리포트 이미지 저장</button>
-
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
-        // 1. 오늘 날짜 자동 설정
-        const d = new Date();
-        document.getElementById('todayDate').innerText = `${d.getMonth() + 1}월 ${d.getDate()}일`;
-
-        // 2. 이미지 다운로드 함수 (고해상도 유지)
-        document.getElementById('saveBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('saveBtn');
-            const area = document.getElementById('reportArea');
-            
-            btn.innerText = "⏳ 생성 중...";
-            btn.style.opacity = "0.7";
-
-            try {
-                // 폰트 완전 로드 대기
-                await document.fonts.ready;
-
-                // 렌더링 안정화 지연
-                setTimeout(() => {
-                    html2canvas(area, {
-                        scale: 3, // 고해상도
-                        useCORS: true,
-                        backgroundColor: "#f0f2f5",
-                        logging: false
-                    }).then(canvas => {
-                        const link = document.createElement('a');
-                        link.download = `BlackRock_Report_${Date.now()}.png`;
-                        link.href = canvas.toDataURL();
-                        link.click();
-                        
-                        btn.innerText = "📥 리포트 이미지 저장";
-                        btn.style.opacity = "1";
-                    });
-                }, 100);
-            } catch (err) {
-                console.error("이미지 생성 실패:", err);
-                alert("이미지 생성 중 오류가 발생했습니다.");
-                btn.innerText = "📥 리포트 이미지 저장";
-            }
+        // 텍스트 실시간 반영
+        document.getElementById('coord-input').addEventListener('input', function(e) {
+            document.getElementById('val-coord').innerText = e.target.value;
         });
+
+        document.getElementById('member-input').addEventListener('input', function(e) {
+            document.getElementById('val-member').innerText = e.target.value;
+        });
+
+        // 이미지 업로드 공통 함수
+        function handleImageUpload(inputId, targetId, isLogo = false) {
+            const fileInput = document.getElementById(inputId);
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const imgElement = document.getElementById(targetId);
+                        imgElement.src = event.target.result;
+                        
+                        // 중앙 로고의 경우, 이미지가 올라오면 기본 텍스트를 숨김 처리
+                        if(isLogo) {
+                            imgElement.style.display = 'block';
+                            document.getElementById('default-logo-text').style.display = 'none';
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // 각 이미지 업로드 이벤트 바인딩
+        handleImageUpload('profile-upload', 'card-profile');
+        handleImageUpload('qr-upload', 'card-qr');
+        handleImageUpload('logo-upload', 'card-logo', true);
+
+        // 카드 이미지 다운로드 기능 (html2canvas 사용)
+        function downloadCard() {
+            const card = document.getElementById('card-canvas');
+            
+            html2canvas(card, {
+                scale: 2, // 고해상도 저장
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'membership_card.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
     </script>
 </body>
 </html>
